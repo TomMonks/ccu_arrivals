@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 
-<title>CCU Arrivals - Project Method 3: Applied to CCU</title>
+<title>CCU Arrivals - Method 3</title>
 <style>
 code{white-space: pre-wrap;}
 span.smallcaps{font-variant: small-caps;}
@@ -110,7 +110,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
       <button type="button" class="quarto-btn-toggle btn" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
         <i class="bi bi-layout-text-sidebar-reverse"></i>
       </button>
-      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../02_applied/01_method3_ccu.html">CCU example</a></li><li class="breadcrumb-item"><a href="../02_applied/01_method3_ccu.html">Project Method 3: Applied to CCU</a></li></ol></nav>
+      <nav class="quarto-page-breadcrumbs" aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="../02_applied/01_method3_ccu.html">CCU example</a></li><li class="breadcrumb-item"><a href="../02_applied/01_method3_ccu.html">Method 3</a></li></ol></nav>
       <a class="flex-grow-1" role="button" data-bs-toggle="collapse" data-bs-target="#quarto-sidebar,#quarto-sidebar-glass" aria-controls="quarto-sidebar" aria-expanded="false" aria-label="Toggle sidebar navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">      
       </a>
       <button type="button" class="btn quarto-search-button" aria-label="" onclick="window.quartoOpenSearch();">
@@ -147,7 +147,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../abstract.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Summary</span></a>
+ <span class="menu-text">Results Summary</span></a>
   </div>
 </li>
       </ul>
@@ -164,12 +164,15 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../01_theory/01_method3_banks.html" class="sidebar-item-text sidebar-link">
- <span class="menu-text">Project Method 3</span></a>
+ <span class="menu-text">Method3</span></a>
   </div>
 </li>
           <li class="sidebar-item">
- <span class="menu-text">01_theory/01_thinning_banks.ipynb</span>
-  </li>
+  <div class="sidebar-item-container"> 
+  <a href="../01_theory/02_thinning_banks.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NSPP via thinning</span></a>
+  </div>
+</li>
       </ul>
   </li>
         <li class="sidebar-item sidebar-item-section">
@@ -184,17 +187,16 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
           <li class="sidebar-item">
   <div class="sidebar-item-container"> 
   <a href="../02_applied/01_method3_ccu.html" class="sidebar-item-text sidebar-link active">
- <span class="menu-text">Project Method 3: Applied to CCU</span></a>
+ <span class="menu-text">Method 3</span></a>
   </div>
 </li>
           <li class="sidebar-item">
- <span class="menu-text">02_applied/01_thinning_ccu.ipynb</span>
-  </li>
+  <div class="sidebar-item-container"> 
+  <a href="../02_applied/02_thinning_ccu.html" class="sidebar-item-text sidebar-link">
+ <span class="menu-text">NSPP via thinning</span></a>
+  </div>
+</li>
       </ul>
-  </li>
-        <li class="sidebar-item sidebar-item-section">
-      <span class="sidebar-item-text sidebar-link text-start">
- <span class="menu-text">STRESS reporting</span></span>
   </li>
     </ul>
     </div>
@@ -220,7 +222,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 
 <header id="title-block-header" class="quarto-title-block default">
 <div class="quarto-title">
-<h1 class="title">Project Method 3: Applied to CCU</h1>
+<h1 class="title">Method 3</h1>
 </div>
 
 
@@ -238,7 +240,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <p>This notebook generates the hourly number of arrivals using a Poisson distribution for each hour. This is applied to the example from thr CCU weekday dataset.</p>
 <section id="imports" class="level2">
 <h2 class="anchored" data-anchor-id="imports">Imports</h2>
-<div class="cell" data-execution_count="1">
+<div class="cell" data-execution_count="10">
 <div class="sourceCode cell-code" id="cb1"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> pandas <span class="im">as</span> pd</span>
 <span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> numpy <span class="im">as</span> np</span>
 <span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt</span>
@@ -248,17 +250,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
 <span id="cb1-7"><a href="#cb1-7" aria-hidden="true" tabindex="-1"></a><span class="im">from</span> sim_tools.datasets <span class="im">import</span> load_banks_et_al_nspp</span>
 <span id="cb1-8"><a href="#cb1-8" aria-hidden="true" tabindex="-1"></a><span class="im">import</span> sim_tools</span>
 <span id="cb1-9"><a href="#cb1-9" aria-hidden="true" tabindex="-1"></a>sim_tools.__version__</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
-<div class="cell-output cell-output-stderr">
-<pre><code>/tmp/ipykernel_484419/4132349394.py:1: DeprecationWarning: 
-Pyarrow will become a required dependency of pandas in the next major release of pandas (pandas 3.0),
-(to allow more performant data types, such as the Arrow string type, and better interoperability with other libraries)
-but was not found to be installed on your system.
-If this would cause problems for you,
-please provide us feedback at https://github.com/pandas-dev/pandas/issues/54466
-        
-  import pandas as pd</code></pre>
-</div>
-<div class="cell-output cell-output-display" data-execution_count="1">
+<div class="cell-output cell-output-display" data-execution_count="10">
 <pre><code>'0.5.0'</code></pre>
 </div>
 </div>
@@ -267,8 +259,8 @@ please provide us feedback at https://github.com/pandas-dev/pandas/issues/54466
 <h2 class="anchored" data-anchor-id="arrival-profile-data">Arrival Profile Data</h2>
 <p>We will use the <code>arrival_rate</code> column as the parameter of the individual Poisson distributions.</p>
 <div class="cell" data-execution_count="2">
-<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a>ccu_arrival_profile_week <span class="op">=</span> pd.read_csv(<span class="st">'./data/weekday_profile.csv'</span>)</span>
-<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>ccu_arrival_profile_week.<span class="bu">round</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a>ccu_arrival_profile_week <span class="op">=</span> pd.read_csv(<span class="st">'./data/weekday_profile.csv'</span>)</span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a>ccu_arrival_profile_week.<span class="bu">round</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="2">
 <div>
 
@@ -438,57 +430,57 @@ please provide us feedback at https://github.com/pandas-dev/pandas/issues/54466
 <h2 class="anchored" data-anchor-id="sampler">Sampler</h2>
 <p>A class has been created to simplify the sampling.</p>
 <div class="cell" data-execution_count="3">
-<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> HourPoissonSampler:</span>
-<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, arrival_profile, random_seed<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.arrival_profile <span class="op">=</span> arrival_profile</span>
-<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.rng <span class="op">=</span> np.random.default_rng(random_seed)</span>
-<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> sample(<span class="va">self</span>, hour, size<span class="op">=</span><span class="va">None</span>):</span>
-<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">'''Sample the number of arrivals in a given hour</span></span>
-<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-9"><a href="#cb5-9" aria-hidden="true" tabindex="-1"></a><span class="co">        Parameters:</span></span>
-<span id="cb5-10"><a href="#cb5-10" aria-hidden="true" tabindex="-1"></a><span class="co">        ---------</span></span>
-<span id="cb5-11"><a href="#cb5-11" aria-hidden="true" tabindex="-1"></a><span class="co">        hour: int</span></span>
-<span id="cb5-12"><a href="#cb5-12" aria-hidden="true" tabindex="-1"></a><span class="co">            Zero indexed hour</span></span>
-<span id="cb5-13"><a href="#cb5-13" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-14"><a href="#cb5-14" aria-hidden="true" tabindex="-1"></a><span class="co">        size: int, optional (default=None)</span></span>
-<span id="cb5-15"><a href="#cb5-15" aria-hidden="true" tabindex="-1"></a><span class="co">            Number of samples to return. None returns 1.</span></span>
-<span id="cb5-16"><a href="#cb5-16" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb5-17"><a href="#cb5-17" aria-hidden="true" tabindex="-1"></a><span class="co">        Returns:</span></span>
-<span id="cb5-18"><a href="#cb5-18" aria-hidden="true" tabindex="-1"></a><span class="co">        -------</span></span>
-<span id="cb5-19"><a href="#cb5-19" aria-hidden="true" tabindex="-1"></a><span class="co">        np.array or float</span></span>
-<span id="cb5-20"><a href="#cb5-20" aria-hidden="true" tabindex="-1"></a><span class="co">        </span></span>
-<span id="cb5-21"><a href="#cb5-21" aria-hidden="true" tabindex="-1"></a><span class="co">        '''</span></span>
-<span id="cb5-22"><a href="#cb5-22" aria-hidden="true" tabindex="-1"></a>        rate <span class="op">=</span> <span class="va">self</span>.arrival_profile.iloc[hour][<span class="st">'arrival_rate'</span>]</span>
-<span id="cb5-23"><a href="#cb5-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.rng.poisson(rate, size<span class="op">=</span>size)</span>
-<span id="cb5-24"><a href="#cb5-24" aria-hidden="true" tabindex="-1"></a>    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb4"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb4-1"><a href="#cb4-1" aria-hidden="true" tabindex="-1"></a><span class="kw">class</span> HourPoissonSampler:</span>
+<span id="cb4-2"><a href="#cb4-2" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, arrival_profile, random_seed<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb4-3"><a href="#cb4-3" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.arrival_profile <span class="op">=</span> arrival_profile</span>
+<span id="cb4-4"><a href="#cb4-4" aria-hidden="true" tabindex="-1"></a>        <span class="va">self</span>.rng <span class="op">=</span> np.random.default_rng(random_seed)</span>
+<span id="cb4-5"><a href="#cb4-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-6"><a href="#cb4-6" aria-hidden="true" tabindex="-1"></a>    <span class="kw">def</span> sample(<span class="va">self</span>, hour, size<span class="op">=</span><span class="va">None</span>):</span>
+<span id="cb4-7"><a href="#cb4-7" aria-hidden="true" tabindex="-1"></a>        <span class="co">'''Sample the number of arrivals in a given hour</span></span>
+<span id="cb4-8"><a href="#cb4-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-9"><a href="#cb4-9" aria-hidden="true" tabindex="-1"></a><span class="co">        Parameters:</span></span>
+<span id="cb4-10"><a href="#cb4-10" aria-hidden="true" tabindex="-1"></a><span class="co">        ---------</span></span>
+<span id="cb4-11"><a href="#cb4-11" aria-hidden="true" tabindex="-1"></a><span class="co">        hour: int</span></span>
+<span id="cb4-12"><a href="#cb4-12" aria-hidden="true" tabindex="-1"></a><span class="co">            Zero indexed hour</span></span>
+<span id="cb4-13"><a href="#cb4-13" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-14"><a href="#cb4-14" aria-hidden="true" tabindex="-1"></a><span class="co">        size: int, optional (default=None)</span></span>
+<span id="cb4-15"><a href="#cb4-15" aria-hidden="true" tabindex="-1"></a><span class="co">            Number of samples to return. None returns 1.</span></span>
+<span id="cb4-16"><a href="#cb4-16" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb4-17"><a href="#cb4-17" aria-hidden="true" tabindex="-1"></a><span class="co">        Returns:</span></span>
+<span id="cb4-18"><a href="#cb4-18" aria-hidden="true" tabindex="-1"></a><span class="co">        -------</span></span>
+<span id="cb4-19"><a href="#cb4-19" aria-hidden="true" tabindex="-1"></a><span class="co">        np.array or float</span></span>
+<span id="cb4-20"><a href="#cb4-20" aria-hidden="true" tabindex="-1"></a><span class="co">        </span></span>
+<span id="cb4-21"><a href="#cb4-21" aria-hidden="true" tabindex="-1"></a><span class="co">        '''</span></span>
+<span id="cb4-22"><a href="#cb4-22" aria-hidden="true" tabindex="-1"></a>        rate <span class="op">=</span> <span class="va">self</span>.arrival_profile.iloc[hour][<span class="st">'arrival_rate'</span>]</span>
+<span id="cb4-23"><a href="#cb4-23" aria-hidden="true" tabindex="-1"></a>        <span class="cf">return</span> <span class="va">self</span>.rng.poisson(rate, size<span class="op">=</span>size)</span>
+<span id="cb4-24"><a href="#cb4-24" aria-hidden="true" tabindex="-1"></a>    </span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="using-the-sampler" class="level2">
 <h2 class="anchored" data-anchor-id="using-the-sampler">Using the sampler</h2>
 <div class="cell" data-execution_count="4">
-<div class="sourceCode cell-code" id="cb6"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb6-1"><a href="#cb6-1" aria-hidden="true" tabindex="-1"></a>samples_per_hour <span class="op">=</span> <span class="dv">10_000</span></span>
-<span id="cb6-2"><a href="#cb6-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-3"><a href="#cb6-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create the sampler and set seed</span></span>
-<span id="cb6-4"><a href="#cb6-4" aria-hidden="true" tabindex="-1"></a>ph_sampler <span class="op">=</span> HourPoissonSampler(ccu_arrival_profile_week, random_seed<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb6-5"><a href="#cb6-5" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb6-6"><a href="#cb6-6" aria-hidden="true" tabindex="-1"></a><span class="co"># returns numpy array for hour 1</span></span>
-<span id="cb6-7"><a href="#cb6-7" aria-hidden="true" tabindex="-1"></a>hr_sample <span class="op">=</span> ph_sampler.sample(<span class="dv">0</span>, size<span class="op">=</span>samples_per_hour)</span>
-<span id="cb6-8"><a href="#cb6-8" aria-hidden="true" tabindex="-1"></a>hr_sample.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a>samples_per_hour <span class="op">=</span> <span class="dv">10_000</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="co"># create the sampler and set seed</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>ph_sampler <span class="op">=</span> HourPoissonSampler(ccu_arrival_profile_week, random_seed<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a><span class="co"># returns numpy array for hour 1</span></span>
+<span id="cb5-7"><a href="#cb5-7" aria-hidden="true" tabindex="-1"></a>hr_sample <span class="op">=</span> ph_sampler.sample(<span class="dv">0</span>, size<span class="op">=</span>samples_per_hour)</span>
+<span id="cb5-8"><a href="#cb5-8" aria-hidden="true" tabindex="-1"></a>hr_sample.shape</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="4">
 <pre><code>(10000,)</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="5">
-<div class="sourceCode cell-code" id="cb8"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb8-1"><a href="#cb8-1" aria-hidden="true" tabindex="-1"></a><span class="co"># first 10 results</span></span>
-<span id="cb8-2"><a href="#cb8-2" aria-hidden="true" tabindex="-1"></a>hr_sample[:<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># first 10 results</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a>hr_sample[:<span class="dv">10</span>]</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="5">
 <pre><code>array([2, 1, 3, 1, 3, 0, 1, 3, 3, 1])</code></pre>
 </div>
 </div>
 <div class="cell" data-execution_count="6">
-<div class="sourceCode cell-code" id="cb10"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb10-1"><a href="#cb10-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mean arrival rate as expected - its our rate parameter og 0.067 per hr.</span></span>
-<span id="cb10-2"><a href="#cb10-2" aria-hidden="true" tabindex="-1"></a>hr_sample.mean().<span class="bu">round</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># mean arrival rate as expected - its our rate parameter og 0.067 per hr.</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a>hr_sample.mean().<span class="bu">round</span>(<span class="dv">1</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display" data-execution_count="6">
 <pre><code>1.1</code></pre>
 </div>
@@ -497,52 +489,52 @@ please provide us feedback at https://github.com/pandas-dev/pandas/issues/54466
 <section id="sampling-experiment" class="level2">
 <h2 class="anchored" data-anchor-id="sampling-experiment">Sampling experiment</h2>
 <div class="cell" data-execution_count="7">
-<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a>ph_sampler <span class="op">=</span> HourPoissonSampler(ccu_arrival_profile_week, random_seed<span class="op">=</span><span class="dv">42</span>)</span>
-<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>samples <span class="op">=</span> []</span>
-<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> hr <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(ccu_arrival_profile_week)):</span>
-<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>    hr_sample <span class="op">=</span> ph_sampler.sample(hr, size<span class="op">=</span>samples_per_hour)</span>
-<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>    samples.append(hr_sample)</span>
-<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a>ph_sampler <span class="op">=</span> HourPoissonSampler(ccu_arrival_profile_week, random_seed<span class="op">=</span><span class="dv">42</span>)</span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>samples <span class="op">=</span> []</span>
+<span id="cb11-4"><a href="#cb11-4" aria-hidden="true" tabindex="-1"></a><span class="cf">for</span> hr <span class="kw">in</span> <span class="bu">range</span>(<span class="bu">len</span>(ccu_arrival_profile_week)):</span>
+<span id="cb11-5"><a href="#cb11-5" aria-hidden="true" tabindex="-1"></a>    hr_sample <span class="op">=</span> ph_sampler.sample(hr, size<span class="op">=</span>samples_per_hour)</span>
+<span id="cb11-6"><a href="#cb11-6" aria-hidden="true" tabindex="-1"></a>    samples.append(hr_sample)</span>
+<span id="cb11-7"><a href="#cb11-7" aria-hidden="true" tabindex="-1"></a></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 </section>
 <section id="plot-results" class="level2">
 <h2 class="anchored" data-anchor-id="plot-results">Plot results</h2>
 <p>The hour means are our theorectical arrival rates per hour - as expected.</p>
-<div class="cell" data-execution_count="10">
-<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get hour means</span></span>
-<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>hour_means <span class="op">=</span> np.asarray(samples).mean(axis<span class="op">=</span><span class="dv">1</span>)</span>
-<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>hour_sd <span class="op">=</span> np.asarray(samples).std(axis<span class="op">=</span><span class="dv">1</span>) </span>
-<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>upper <span class="op">=</span> hour_means <span class="op">+</span> hour_sd</span>
-<span id="cb13-6"><a href="#cb13-6" aria-hidden="true" tabindex="-1"></a>lower <span class="op">=</span> hour_means <span class="op">-</span> hour_sd</span>
-<span id="cb13-7"><a href="#cb13-7" aria-hidden="true" tabindex="-1"></a>lower[lower <span class="op">&lt;</span> <span class="dv">0</span>] <span class="op">=</span> <span class="dv">0</span></span>
-<span id="cb13-8"><a href="#cb13-8" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-9"><a href="#cb13-9" aria-hidden="true" tabindex="-1"></a>x_values <span class="op">=</span> np.arange(<span class="dv">0</span>, ccu_arrival_profile_week.shape[<span class="dv">0</span>])</span>
-<span id="cb13-10"><a href="#cb13-10" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-11"><a href="#cb13-11" aria-hidden="true" tabindex="-1"></a><span class="co"># visualise</span></span>
-<span id="cb13-12"><a href="#cb13-12" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">3</span>))</span>
-<span id="cb13-13"><a href="#cb13-13" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> fig.add_subplot()</span>
-<span id="cb13-14"><a href="#cb13-14" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb13-15"><a href="#cb13-15" aria-hidden="true" tabindex="-1"></a><span class="co"># plot in this case returns a 2D line plot object</span></span>
-<span id="cb13-16"><a href="#cb13-16" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.plot(hour_means, label<span class="op">=</span><span class="st">'Method3: Mean'</span>)</span>
-<span id="cb13-17"><a href="#cb13-17" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.fill_between(x_values, lower, upper, alpha<span class="op">=</span><span class="fl">0.2</span>, label<span class="op">=</span><span class="st">'Method3: +1SD'</span>)</span>
-<span id="cb13-18"><a href="#cb13-18" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.set_ylim(<span class="dv">0</span>, <span class="fl">3.5</span>)</span>
-<span id="cb13-19"><a href="#cb13-19" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.set_xlim(<span class="dv">0</span>, <span class="dv">23</span>)</span>
-<span id="cb13-20"><a href="#cb13-20" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> plt.xticks(np.arange(<span class="dv">0</span>, ccu_arrival_profile_week.shape[<span class="dv">0</span>]))</span>
-<span id="cb13-21"><a href="#cb13-21" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.set_ylabel(<span class="st">"Patients"</span>)</span>
-<span id="cb13-22"><a href="#cb13-22" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.set_xlabel(<span class="st">"hour of simulation"</span>)</span>
-<span id="cb13-23"><a href="#cb13-23" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="8">
+<div class="sourceCode cell-code" id="cb12"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb12-1"><a href="#cb12-1" aria-hidden="true" tabindex="-1"></a><span class="co"># get hour means</span></span>
+<span id="cb12-2"><a href="#cb12-2" aria-hidden="true" tabindex="-1"></a>hour_means <span class="op">=</span> np.asarray(samples).mean(axis<span class="op">=</span><span class="dv">1</span>)</span>
+<span id="cb12-3"><a href="#cb12-3" aria-hidden="true" tabindex="-1"></a>hour_sd <span class="op">=</span> np.asarray(samples).std(axis<span class="op">=</span><span class="dv">1</span>) </span>
+<span id="cb12-4"><a href="#cb12-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-5"><a href="#cb12-5" aria-hidden="true" tabindex="-1"></a>upper <span class="op">=</span> hour_means <span class="op">+</span> hour_sd</span>
+<span id="cb12-6"><a href="#cb12-6" aria-hidden="true" tabindex="-1"></a>lower <span class="op">=</span> hour_means <span class="op">-</span> hour_sd</span>
+<span id="cb12-7"><a href="#cb12-7" aria-hidden="true" tabindex="-1"></a>lower[lower <span class="op">&lt;</span> <span class="dv">0</span>] <span class="op">=</span> <span class="dv">0</span></span>
+<span id="cb12-8"><a href="#cb12-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-9"><a href="#cb12-9" aria-hidden="true" tabindex="-1"></a>x_values <span class="op">=</span> np.arange(<span class="dv">0</span>, ccu_arrival_profile_week.shape[<span class="dv">0</span>])</span>
+<span id="cb12-10"><a href="#cb12-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-11"><a href="#cb12-11" aria-hidden="true" tabindex="-1"></a><span class="co"># visualise</span></span>
+<span id="cb12-12"><a href="#cb12-12" aria-hidden="true" tabindex="-1"></a>fig <span class="op">=</span> plt.figure(figsize<span class="op">=</span>(<span class="dv">12</span>,<span class="dv">3</span>))</span>
+<span id="cb12-13"><a href="#cb12-13" aria-hidden="true" tabindex="-1"></a>ax <span class="op">=</span> fig.add_subplot()</span>
+<span id="cb12-14"><a href="#cb12-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb12-15"><a href="#cb12-15" aria-hidden="true" tabindex="-1"></a><span class="co"># plot in this case returns a 2D line plot object</span></span>
+<span id="cb12-16"><a href="#cb12-16" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.plot(hour_means, label<span class="op">=</span><span class="st">'Method3: Mean'</span>)</span>
+<span id="cb12-17"><a href="#cb12-17" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.fill_between(x_values, lower, upper, alpha<span class="op">=</span><span class="fl">0.2</span>, label<span class="op">=</span><span class="st">'Method3: +1SD'</span>)</span>
+<span id="cb12-18"><a href="#cb12-18" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.set_ylim(<span class="dv">0</span>, <span class="fl">3.5</span>)</span>
+<span id="cb12-19"><a href="#cb12-19" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.set_xlim(<span class="dv">0</span>, <span class="dv">23</span>)</span>
+<span id="cb12-20"><a href="#cb12-20" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> plt.xticks(np.arange(<span class="dv">0</span>, ccu_arrival_profile_week.shape[<span class="dv">0</span>]))</span>
+<span id="cb12-21"><a href="#cb12-21" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.set_ylabel(<span class="st">"Patients"</span>)</span>
+<span id="cb12-22"><a href="#cb12-22" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.set_xlabel(<span class="st">"hour of simulation"</span>)</span>
+<span id="cb12-23"><a href="#cb12-23" aria-hidden="true" tabindex="-1"></a>_ <span class="op">=</span> ax.legend()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-display">
 <p><img src="01_method3_ccu_files/figure-html/cell-9-output-1.png" class="img-fluid"></p>
 </div>
 </div>
-<div class="cell" data-execution_count="31">
-<div class="sourceCode cell-code" id="cb14"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb14-1"><a href="#cb14-1" aria-hidden="true" tabindex="-1"></a>method3_output <span class="op">=</span> pd.DataFrame(hour_means, columns<span class="op">=</span>[<span class="st">"mean"</span>])</span>
-<span id="cb14-2"><a href="#cb14-2" aria-hidden="true" tabindex="-1"></a>method3_output[<span class="st">'-1SD'</span>] <span class="op">=</span> lower</span>
-<span id="cb14-3"><a href="#cb14-3" aria-hidden="true" tabindex="-1"></a>method3_output[<span class="st">'+1SD'</span>] <span class="op">=</span> upper</span>
-<span id="cb14-4"><a href="#cb14-4" aria-hidden="true" tabindex="-1"></a>method3_output[<span class="st">'sd'</span>] <span class="op">=</span> hour_sd</span>
-<span id="cb14-5"><a href="#cb14-5" aria-hidden="true" tabindex="-1"></a>method3_output.to_csv(<span class="st">"./ccu_method3.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell" data-execution_count="9">
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode python code-with-copy"><code class="sourceCode python"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a>method3_output <span class="op">=</span> pd.DataFrame(hour_means, columns<span class="op">=</span>[<span class="st">"mean"</span>])</span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>method3_output[<span class="st">'-1SD'</span>] <span class="op">=</span> lower</span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>method3_output[<span class="st">'+1SD'</span>] <span class="op">=</span> upper</span>
+<span id="cb13-4"><a href="#cb13-4" aria-hidden="true" tabindex="-1"></a>method3_output[<span class="st">'sd'</span>] <span class="op">=</span> hour_sd</span>
+<span id="cb13-5"><a href="#cb13-5" aria-hidden="true" tabindex="-1"></a>method3_output.to_csv(<span class="st">"./ccu_method3.csv"</span>, index<span class="op">=</span><span class="va">False</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 </div>
 
 

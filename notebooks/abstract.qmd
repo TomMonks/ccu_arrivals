@@ -1,5 +1,5 @@
 ---
-title: "Summary"
+title: "Results Summary"
 date: 2024-06-22
 author:
   - name: Thomas Monks
@@ -20,29 +20,31 @@ funding: "This work is funded by NIHR HS&DR, grant number[...]"
 
 ## Background
 
-This notebook compares two approaches to simulating a time dependent process where the number of events is Poisson distributed.  In particular we explore a scenario where the number of events per hour follows hourly Poisson distributions.  We include an applied example where the arrival rates across a 24 hour period is lows.
+This notebook compares two approaches for simulating a time dependent process where the number of events is Poisson distributed.  In particular we explore a scenario where the number of events per hour follows hourly Poisson distributions.  We include an applied example where the arrival rates across a 24 hour period is low.
 
 We investigate two methods:
 
 1. Parameterising Poisson distributions per hour and sampling the **number of events**. We call this *method3*
 2. Sampling the time between arrivals, called the inter-arrival time, from hourly Exponential distributions where interval overruns are corrected by *thinning*. This is a standard text book method for simulating a Non-Stationary Poisson Process (NSPP). We call this *NSPP via Thinning*
 
-Method3 is a discrete approach that provides batch arrivals at the start of each hour.  In a Discrete-Event Simulation (DES) it must be implented as a process that samples at the start of each hour. NSSP via Thinning provides continuous inter-arrival times i.e. spread the arrival across hours instead of batching at the beginning of the hour.  It is implemented into a DES in the same manner as any statistical distribution.
+Method3 is a discrete approach that provides batch arrivals at the start of each hour.  In a Discrete-Event Simulation (DES) it must be implented as a process that samples at the start of each hour. NSSP via Thinning provides continuous inter-arrival times i.e. the method spreads the arrivals across the 60 minutes within an hour instead of batching all arrivals at the beginning of the hour.  It is implemented in a DES in the same manner as any statistical distribution.
 
-> Our concern with NSPP via thinning in the case of a CCU is that the number of arrivals per hour is very low. Sometimes less than zero. The comparison with the method3 allows for a check that it is working as expected.
+::: {.callout-important}
+Our concern with NSPP via thinning in the case of a CCU is that the number of arrivals per hour is very low. Sometimes less than one. It is unclear if the method holds in this extreme condition. A comparison with method3 allows for a check that it is working as expected.
+:::
 
 ## Methods
 
-We compare the two methods using the **mean number of arrivals per hour** on a weekday versus a weekend. In the case of *method3* the expected answer is straighforward as the number of events is the *rate* parameter of the distributions. For method3, we therefore simply draw 10,000 samples from each hour. For a NSPP via thinning, we conduct 10,000 replications of a single simulated day and tabulate the number of arrivals per hour. A secondary measure is the standard deviation of the number of arrivals per hour. 
+We compare the two methods using the **mean number of arrivals per hour** on a **weekday**. In the case of *method3* the expected answer is straighforward as the number of events is the *rate* parameter of the distributions. For method3, we therefore simply draw 10,000 samples from each hour. For a NSPP via thinning, we conduct 10,000 replications of a single simulated day and tabulate the number of arrivals per hour. A secondary measure is the standard deviation of the number of arrivals per hour. 
 
 We conduct this analysis for a simple theoretical example from Banks et al and applied to real values from a CCU.
 
 ## Results
 
-The theoretical results comparing mean number of arrivals per hour were identical. Figure 1 demonstrates that the results from the CCU applied example. This shows that method3 and NSPP via thinning are qualitatively the same.  NSPP Thinning smooths the mean number of arrivals per hour to a small extent.  Variation in the number of arrivals per hour is similar with identical standard deviations.
+The [theoretical results](./01_theory/02_thinning_banks.ipynb) comparing mean number of arrivals per hour were identical.  @fig-results demonstrates that the results from the CCU applied example. This shows that method3 and NSPP via thinning are qualitatively the same.  NSPP Thinning smooths the mean number of arrivals per hour to a small extent.  Variation in the number of arrivals per hour is similar with identical standard deviations.
 
-![](./02_applied/comparison_weekday.png){fig-alt="comparison chart"}
+![Main result: Mean number of arrivals and standard dev of arrivals per hour](./02_applied/comparison_weekday.png){#fig-results fig-alt="comparison}
 
 ## Conclusions
 
-To simulate the number of arrivals per hour in a CCU either method3 or NSPP via thinning can be employed. Results are for all practical purposes identical. If variation within an hour is required NSPP via thinning should be employed over method3.  NSPP via thinning may also be simpler to implement in simulation software.  Although method3 and NSPP via thinning are suitable for simulating the **mean number of arrivals**, a limitation of this analysis is that we do not consider if the empirical number of arrivals in the CCU truely follows a Poisson process.
+To simulate the number of arrivals per hour in a CCU either method3 or NSPP via thinning can be employed. Results are for all practical purposes identical. If variation within an hour is required NSPP via thinning should be employed over method3.  NSPP via thinning may also be simpler to implement in simulation software and is standard practice.  Although method3 and NSPP via thinning are suitable for simulating the **mean number of arrivals**, a limitation of this analysis is that we do not consider if the empirical number of arrivals in the CCU truely follows a Poisson process.

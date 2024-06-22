@@ -4,9 +4,9 @@ project:
     - index.qmd
     - abstract.qmd
     - 01_theory/01_method3_banks.ipynb
-    - 01_theory/01_thinning_banks.ipynb
+    - 01_theory/02_thinning_banks.ipynb
     - 02_applied/01_method3_ccu.ipynb
-    - 02_applied/01_thinning_ccu.ipynb
+    - 02_applied/02_thinning_ccu.ipynb
 
 # theme:
 #   light: flatly
@@ -26,12 +26,11 @@ website:
       - section: "Theorectical example"
         contents:
           - 01_theory/01_method3_banks.ipynb
-          - 01_theory/01_thinning_banks.ipynb
+          - 01_theory/02_thinning_banks.ipynb
       - section: "CCU example"
         contents:
           - 02_applied/01_method3_ccu.ipynb
-          - 02_applied/01_thinning_ccu.ipynb
-      - section: "STRESS reporting"
+          - 02_applied/02_thinning_ccu.ipynb
 
 format:
   html:
