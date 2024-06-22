@@ -175,7 +175,7 @@ ul.task-list li input[type="checkbox"] {
     <h2 id="toc-title">On this page</h2>
    
   <ul>
-  <li><a href="#introduction" id="toc-introduction" class="nav-link active" data-scroll-target="#introduction">Introduction</a></li>
+  <li><a href="#background" id="toc-background" class="nav-link active" data-scroll-target="#background">Background</a></li>
   <li><a href="#methods" id="toc-methods" class="nav-link" data-scroll-target="#methods">Methods</a></li>
   <li><a href="#results" id="toc-results" class="nav-link" data-scroll-target="#results">Results</a></li>
   <li><a href="#conclusions" id="toc-conclusions" class="nav-link" data-scroll-target="#conclusions">Conclusions</a></li>
@@ -223,32 +223,47 @@ ul.task-list li input[type="checkbox"] {
 
 </header>
 
-<section id="introduction" class="level2">
-<h2 class="anchored" data-anchor-id="introduction">Introduction</h2>
-<p>This notebook compares two approaches to simulating a time dependent process where the number of events is Poisson distributed. In particular we explore a scenario where the number of events per hour follows hourly Poisson distributions. We include an applied example where the arrival rates across a 24 hour period is lows.</p>
+<section id="background" class="level2">
+<h2 class="anchored" data-anchor-id="background">Background</h2>
+<p>This notebook compares two approaches for simulating a time dependent process where the number of events is Poisson distributed. In particular we explore a scenario where the number of events per hour follows hourly Poisson distributions. We include an applied example where the arrival rates across a 24 hour period is low.</p>
 <p>We investigate two methods:</p>
 <ol type="1">
 <li>Parameterising Poisson distributions per hour and sampling the <strong>number of events</strong>. We call this <em>method3</em></li>
 <li>Sampling the time between arrivals, called the inter-arrival time, from hourly Exponential distributions where interval overruns are corrected by <em>thinning</em>. This is a standard text book method for simulating a Non-Stationary Poisson Process (NSPP). We call this <em>NSPP via Thinning</em></li>
 </ol>
-<p>Method3 is a discrete approach that provides batch arrivals at the start of each hour. In a Discrete-Event Simulation (DES) it must be implented as a process that samples at the start of each hour. NSSP via Thinning provides continuous inter-arrival times i.e.&nbsp;spread the arrival across hours instead of batching at the beginning of the hour. It is implemented into a DES in the same manner as any statistical distribution.</p>
-<blockquote class="blockquote">
-<p>Our concern with NSPP via thinning in the case of a CCU is that the number of arrivals per hour is very low. Sometimes less than one. The comparison with the method3 allows for a check that it is working as expected.</p>
-</blockquote>
+<p>Method3 is a discrete approach that provides batch arrivals at the start of each hour. In a Discrete-Event Simulation (DES) it must be implented as a process that samples at the start of each hour. NSSP via Thinning provides continuous inter-arrival times i.e.&nbsp;the method spreads the arrivals across the 60 minutes within an hour instead of batching all arrivals at the beginning of the hour. It is implemented in a DES in the same manner as any statistical distribution.</p>
+<div class="callout callout-style-default callout-important callout-titled">
+<div class="callout-header d-flex align-content-center">
+<div class="callout-icon-container">
+<i class="callout-icon"></i>
+</div>
+<div class="callout-title-container flex-fill">
+Important
+</div>
+</div>
+<div class="callout-body-container callout-body">
+<p>Our concern with NSPP via thinning in the case of a CCU is that the number of arrivals per hour is very low. Sometimes less than one. It is unclear if the method holds in this extreme condition. A comparison with method3 allows for a check that it is working as expected.</p>
+</div>
+</div>
 </section>
 <section id="methods" class="level2">
 <h2 class="anchored" data-anchor-id="methods">Methods</h2>
-<p>We compare the two methods using the <strong>mean number of arrivals per hour</strong> on a weekday versus a weekend. In the case of <em>method3</em> the expected answer is straighforward as the number of events is the <em>rate</em> parameter of the distributions. For method3, we therefore simply draw 10,000 samples from each hour. For a NSPP via thinning, we conduct 10,000 replications of a single simulated day and tabulate the number of arrivals per hour. A secondary measure is the standard deviation of the number of arrivals per hour.</p>
+<p>We compare the two methods using the <strong>mean number of arrivals per hour</strong> on a <strong>weekday</strong>. In the case of <em>method3</em> the expected answer is straighforward as the number of events is the <em>rate</em> parameter of the distributions. For method3, we therefore simply draw 10,000 samples from each hour. For a NSPP via thinning, we conduct 10,000 replications of a single simulated day and tabulate the number of arrivals per hour. A secondary measure is the standard deviation of the number of arrivals per hour.</p>
 <p>We conduct this analysis for a simple theoretical example from Banks et al and applied to real values from a CCU.</p>
 </section>
 <section id="results" class="level2">
 <h2 class="anchored" data-anchor-id="results">Results</h2>
-<p>The theoretical results comparing mean number of arrivals per hour were identical. Figure 1 demonstrates that the results from the CCU applied example. This shows that method3 and NSPP via thinning are qualitatively the same. NSPP Thinning smooths the mean number of arrivals per hour to a small extent. Variation in the number of arrivals per hour is similar with identical standard deviations.</p>
-<p><img src="./02_applied/comparison_weekday.png" class="img-fluid" alt="comparison chart"></p>
+<p>The <a href="./01_theory/02_thinning_banks.html">theoretical results</a> comparing mean number of arrivals per hour were identical. <a href="#fig-results">Figure&nbsp;1</a> demonstrates that the results from the CCU applied example. This shows that method3 and NSPP via thinning are qualitatively the same. NSPP Thinning smooths the mean number of arrivals per hour to a small extent. Variation in the number of arrivals per hour is similar with identical standard deviations.</p>
+<div id="fig-results" class="quarto-figure quarto-figure-center anchored">
+<figure class="figure">
+<p><img src="./02_applied/comparison_weekday.png" class="img-fluid figure-img" alt="&quot;comparison"></p>
+<figcaption class="figure-caption">Figure&nbsp;1: Main result: Mean number of arrivals and standard dev of arrivals per hour</figcaption>
+</figure>
+</div>
 </section>
 <section id="conclusions" class="level2">
 <h2 class="anchored" data-anchor-id="conclusions">Conclusions</h2>
-<p>To simulate the number of arrivals per hour in a CCU either method3 or NSPP via thinning can be employed. Results are for all practical purposes identical. If variation within an hour is required NSPP via thinning should be employed over method3. NSPP via thinning may also be simpler to implement in simulation software. Although method3 and NSPP via thinning are suitable for simulating the <strong>mean number of arrivals</strong>, a limitation of this analysis is that we do not consider if the empirical number of arrivals in the CCU truely follows a Poisson process.</p>
+<p>To simulate the number of arrivals per hour in a CCU either method3 or NSPP via thinning can be employed. Results are for all practical purposes identical. If variation within an hour is required NSPP via thinning should be employed over method3. NSPP via thinning may also be simpler to implement in simulation software and is standard practice. Although method3 and NSPP via thinning are suitable for simulating the <strong>mean number of arrivals</strong>, a limitation of this analysis is that we do not consider if the empirical number of arrivals in the CCU truely follows a Poisson process.</p>
 
 
 </section>
