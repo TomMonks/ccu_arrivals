@@ -1,0 +1,177 @@
+[
+  {
+    "objectID": "02_applied/01_method3_ccu.html",
+    "href": "02_applied/01_method3_ccu.html",
+    "title": "Project Method 3: Applied to CCU",
+    "section": "",
+    "text": "This notebook generates the hourly number of arrivals using a Poisson distribution for each hour. This is applied to the example from thr CCU weekday dataset."
+  },
+  {
+    "objectID": "02_applied/01_method3_ccu.html#imports",
+    "href": "02_applied/01_method3_ccu.html#imports",
+    "title": "Project Method 3: Applied to CCU",
+    "section": "Imports",
+    "text": "Imports\n\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nplt.style.use('ggplot')\n\nfrom sim_tools.datasets import load_banks_et_al_nspp\nimport sim_tools\nsim_tools.__version__\n\n/tmp/ipykernel_484419/4132349394.py:1: DeprecationWarning: \nPyarrow will become a required dependency of pandas in the next major release of pandas (pandas 3.0),\n(to allow more performant data types, such as the Arrow string type, and better interoperability with other libraries)\nbut was not found to be installed on your system.\nIf this would cause problems for you,\nplease provide us feedback at https://github.com/pandas-dev/pandas/issues/54466\n        \n  import pandas as pd\n\n\n'0.5.0'"
+  },
+  {
+    "objectID": "02_applied/01_method3_ccu.html#arrival-profile-data",
+    "href": "02_applied/01_method3_ccu.html#arrival-profile-data",
+    "title": "Project Method 3: Applied to CCU",
+    "section": "Arrival Profile Data",
+    "text": "Arrival Profile Data\nWe will use the arrival_rate column as the parameter of the individual Poisson distributions.\n\nccu_arrival_profile_week = pd.read_csv('./data/weekday_profile.csv')\nccu_arrival_profile_week.round(1)\n\n\n\n\n\n\n\n\nt\narrival_rate\nmean_iat\n\n\n\n\n0\n0\n1.1\n55.5\n\n\n1\n60\n1.3\n46.1\n\n\n2\n120\n0.9\n69.3\n\n\n3\n180\n0.9\n67.2\n\n\n4\n240\n0.7\n85.1\n\n\n5\n300\n0.7\n81.1\n\n\n6\n360\n0.7\n90.0\n\n\n7\n420\n0.5\n115.1\n\n\n8\n480\n0.4\n145.0\n\n\n9\n540\n0.4\n141.1\n\n\n10\n600\n0.6\n99.1\n\n\n11\n660\n1.0\n62.1\n\n\n12\n720\n1.0\n60.5\n\n\n13\n780\n1.1\n56.3\n\n\n14\n840\n1.2\n50.8\n\n\n15\n900\n1.3\n45.1\n\n\n16\n960\n1.3\n47.7\n\n\n17\n1020\n1.4\n43.5\n\n\n18\n1080\n1.6\n36.7\n\n\n19\n1140\n1.4\n44.4\n\n\n20\n1200\n1.0\n58.2\n\n\n21\n1260\n1.2\n50.4\n\n\n22\n1320\n1.1\n52.9\n\n\n23\n1380\n1.3\n46.9"
+  },
+  {
+    "objectID": "02_applied/01_method3_ccu.html#sampler",
+    "href": "02_applied/01_method3_ccu.html#sampler",
+    "title": "Project Method 3: Applied to CCU",
+    "section": "Sampler",
+    "text": "Sampler\nA class has been created to simplify the sampling.\n\nclass HourPoissonSampler:\n    def __init__(self, arrival_profile, random_seed=None):\n        self.arrival_profile = arrival_profile\n        self.rng = np.random.default_rng(random_seed)\n\n    def sample(self, hour, size=None):\n        '''Sample the number of arrivals in a given hour\n\n        Parameters:\n        ---------\n        hour: int\n            Zero indexed hour\n\n        size: int, optional (default=None)\n            Number of samples to return. None returns 1.\n\n        Returns:\n        -------\n        np.array or float\n        \n        '''\n        rate = self.arrival_profile.iloc[hour]['arrival_rate']\n        return self.rng.poisson(rate, size=size)"
+  },
+  {
+    "objectID": "02_applied/01_method3_ccu.html#using-the-sampler",
+    "href": "02_applied/01_method3_ccu.html#using-the-sampler",
+    "title": "Project Method 3: Applied to CCU",
+    "section": "Using the sampler",
+    "text": "Using the sampler\n\nsamples_per_hour = 10_000\n\n# create the sampler and set seed\nph_sampler = HourPoissonSampler(ccu_arrival_profile_week, random_seed=42)\n\n# returns numpy array for hour 1\nhr_sample = ph_sampler.sample(0, size=samples_per_hour)\nhr_sample.shape\n\n(10000,)\n\n\n\n# first 10 results\nhr_sample[:10]\n\narray([2, 1, 3, 1, 3, 0, 1, 3, 3, 1])\n\n\n\n# mean arrival rate as expected - its our rate parameter og 0.067 per hr.\nhr_sample.mean().round(1)\n\n1.1"
+  },
+  {
+    "objectID": "02_applied/01_method3_ccu.html#sampling-experiment",
+    "href": "02_applied/01_method3_ccu.html#sampling-experiment",
+    "title": "Project Method 3: Applied to CCU",
+    "section": "Sampling experiment",
+    "text": "Sampling experiment\n\nph_sampler = HourPoissonSampler(ccu_arrival_profile_week, random_seed=42)\n\nsamples = []\nfor hr in range(len(ccu_arrival_profile_week)):\n    hr_sample = ph_sampler.sample(hr, size=samples_per_hour)\n    samples.append(hr_sample)"
+  },
+  {
+    "objectID": "02_applied/01_method3_ccu.html#plot-results",
+    "href": "02_applied/01_method3_ccu.html#plot-results",
+    "title": "Project Method 3: Applied to CCU",
+    "section": "Plot results",
+    "text": "Plot results\nThe hour means are our theorectical arrival rates per hour - as expected.\n\n# get hour means\nhour_means = np.asarray(samples).mean(axis=1)\nhour_sd = np.asarray(samples).std(axis=1) \n\nupper = hour_means + hour_sd\nlower = hour_means - hour_sd\nlower[lower &lt; 0] = 0\n\nx_values = np.arange(0, ccu_arrival_profile_week.shape[0])\n\n# visualise\nfig = plt.figure(figsize=(12,3))\nax = fig.add_subplot()\n\n# plot in this case returns a 2D line plot object\n_ = ax.plot(hour_means, label='Method3: Mean')\n_ = ax.fill_between(x_values, lower, upper, alpha=0.2, label='Method3: +1SD')\n_ = ax.set_ylim(0, 3.5)\n_ = ax.set_xlim(0, 23)\n_ = plt.xticks(np.arange(0, ccu_arrival_profile_week.shape[0]))\n_ = ax.set_ylabel(\"Patients\")\n_ = ax.set_xlabel(\"hour of simulation\")\n_ = ax.legend()\n\n\n\n\n\nmethod3_output = pd.DataFrame(hour_means, columns=[\"mean\"])\nmethod3_output['-1SD'] = lower\nmethod3_output['+1SD'] = upper\nmethod3_output['sd'] = hour_sd\nmethod3_output.to_csv(\"./ccu_method3.csv\", index=False)"
+  },
+  {
+    "objectID": "abstract.html",
+    "href": "abstract.html",
+    "title": "Summary",
+    "section": "",
+    "text": "This notebook compares two approaches to simulating a time dependent process where the number of events is Poisson distributed. In particular we explore a scenario where the number of events per hour follows hourly Poisson distributions. We include an applied example where the arrival rates across a 24 hour period is lows.\nWe investigate two methods:\n\nParameterising Poisson distributions per hour and sampling the number of events. We call this method3\nSampling the time between arrivals, called the inter-arrival time, from hourly Exponential distributions where interval overruns are corrected by thinning. This is a standard text book method for simulating a Non-Stationary Poisson Process (NSPP). We call this NSPP via Thinning\n\nMethod3 is a discrete approach that provides batch arrivals at the start of each hour. In a Discrete-Event Simulation (DES) it must be implented as a process that samples at the start of each hour. NSSP via Thinning provides continuous inter-arrival times i.e. spread the arrival across hours instead of batching at the beginning of the hour. It is implemented into a DES in the same manner as any statistical distribution.\n\nOur concern with NSPP via thinning in the case of a CCU is that the number of arrivals per hour is very low. Sometimes less than zero. The comparison with the method3 allows for a check that it is working as expected."
+  },
+  {
+    "objectID": "abstract.html#background",
+    "href": "abstract.html#background",
+    "title": "Summary",
+    "section": "",
+    "text": "This notebook compares two approaches to simulating a time dependent process where the number of events is Poisson distributed. In particular we explore a scenario where the number of events per hour follows hourly Poisson distributions. We include an applied example where the arrival rates across a 24 hour period is lows.\nWe investigate two methods:\n\nParameterising Poisson distributions per hour and sampling the number of events. We call this method3\nSampling the time between arrivals, called the inter-arrival time, from hourly Exponential distributions where interval overruns are corrected by thinning. This is a standard text book method for simulating a Non-Stationary Poisson Process (NSPP). We call this NSPP via Thinning\n\nMethod3 is a discrete approach that provides batch arrivals at the start of each hour. In a Discrete-Event Simulation (DES) it must be implented as a process that samples at the start of each hour. NSSP via Thinning provides continuous inter-arrival times i.e. spread the arrival across hours instead of batching at the beginning of the hour. It is implemented into a DES in the same manner as any statistical distribution.\n\nOur concern with NSPP via thinning in the case of a CCU is that the number of arrivals per hour is very low. Sometimes less than zero. The comparison with the method3 allows for a check that it is working as expected."
+  },
+  {
+    "objectID": "abstract.html#methods",
+    "href": "abstract.html#methods",
+    "title": "Summary",
+    "section": "Methods",
+    "text": "Methods\nWe compare the two methods using the mean number of arrivals per hour on a weekday versus a weekend. In the case of method3 the expected answer is straighforward as the number of events is the rate parameter of the distributions. For method3, we therefore simply draw 10,000 samples from each hour. For a NSPP via thinning, we conduct 10,000 replications of a single simulated day and tabulate the number of arrivals per hour. A secondary measure is the standard deviation of the number of arrivals per hour.\nWe conduct this analysis for a simple theoretical example from Banks et al and applied to real values from a CCU."
+  },
+  {
+    "objectID": "abstract.html#results",
+    "href": "abstract.html#results",
+    "title": "Summary",
+    "section": "Results",
+    "text": "Results\nThe theoretical results comparing mean number of arrivals per hour were identical. Figure 1 demonstrates that the results from the CCU applied example. This shows that method3 and NSPP via thinning are qualitatively the same. NSPP Thinning smooths the mean number of arrivals per hour to a small extent. Variation in the number of arrivals per hour is similar with identical standard deviations."
+  },
+  {
+    "objectID": "abstract.html#conclusions",
+    "href": "abstract.html#conclusions",
+    "title": "Summary",
+    "section": "Conclusions",
+    "text": "Conclusions\nTo simulate the number of arrivals per hour in a CCU either method3 or NSPP via thinning can be employed. Results are for all practical purposes identical. If variation within an hour is required NSPP via thinning should be employed over method3. NSPP via thinning may also be simpler to implement in simulation software. Although method3 and NSPP via thinning are suitable for simulating the mean number of arrivals, a limitation of this analysis is that we do not consider if the empirical number of arrivals in the CCU truely follows a Poisson process."
+  },
+  {
+    "objectID": "index.html",
+    "href": "index.html",
+    "title": "A comparison of method3 and NSPP via thinning",
+    "section": "",
+    "text": "This notebook compares two approaches to simulating a time dependent process where the number of events is Poisson distributed. In particular we explore a scenario where the number of events per hour follows hourly Poisson distributions. We include an applied example where the arrival rates across a 24 hour period is lows.\nWe investigate two methods:\n\nParameterising Poisson distributions per hour and sampling the number of events. We call this method3\nSampling the time between arrivals, called the inter-arrival time, from hourly Exponential distributions where interval overruns are corrected by thinning. This is a standard text book method for simulating a Non-Stationary Poisson Process (NSPP). We call this NSPP via Thinning\n\nMethod3 is a discrete approach that provides batch arrivals at the start of each hour. In a Discrete-Event Simulation (DES) it must be implented as a process that samples at the start of each hour. NSSP via Thinning provides continuous inter-arrival times i.e. spread the arrival across hours instead of batching at the beginning of the hour. It is implemented into a DES in the same manner as any statistical distribution.\n\nOur concern with NSPP via thinning in the case of a CCU is that the number of arrivals per hour is very low. Sometimes less than zero. The comparison with the method3 allows for a check that it is working as expected."
+  },
+  {
+    "objectID": "index.html#introduction",
+    "href": "index.html#introduction",
+    "title": "A comparison of method3 and NSPP via thinning",
+    "section": "",
+    "text": "This notebook compares two approaches to simulating a time dependent process where the number of events is Poisson distributed. In particular we explore a scenario where the number of events per hour follows hourly Poisson distributions. We include an applied example where the arrival rates across a 24 hour period is lows.\nWe investigate two methods:\n\nParameterising Poisson distributions per hour and sampling the number of events. We call this method3\nSampling the time between arrivals, called the inter-arrival time, from hourly Exponential distributions where interval overruns are corrected by thinning. This is a standard text book method for simulating a Non-Stationary Poisson Process (NSPP). We call this NSPP via Thinning\n\nMethod3 is a discrete approach that provides batch arrivals at the start of each hour. In a Discrete-Event Simulation (DES) it must be implented as a process that samples at the start of each hour. NSSP via Thinning provides continuous inter-arrival times i.e. spread the arrival across hours instead of batching at the beginning of the hour. It is implemented into a DES in the same manner as any statistical distribution.\n\nOur concern with NSPP via thinning in the case of a CCU is that the number of arrivals per hour is very low. Sometimes less than zero. The comparison with the method3 allows for a check that it is working as expected."
+  },
+  {
+    "objectID": "index.html#methods",
+    "href": "index.html#methods",
+    "title": "A comparison of method3 and NSPP via thinning",
+    "section": "Methods",
+    "text": "Methods\nWe compare the two methods using the mean number of arrivals per hour on a weekday versus a weekend. In the case of method3 the expected answer is straighforward as the number of events is the rate parameter of the distributions. For method3, we therefore simply draw 10,000 samples from each hour. For a NSPP via thinning, we conduct 10,000 replications of a single simulated day and tabulate the number of arrivals per hour. A secondary measure is the standard deviation of the number of arrivals per hour.\nWe conduct this analysis for a simple theoretical example from Banks et al and applied to real values from a CCU."
+  },
+  {
+    "objectID": "index.html#results",
+    "href": "index.html#results",
+    "title": "A comparison of method3 and NSPP via thinning",
+    "section": "Results",
+    "text": "Results\nThe theoretical results comparing mean number of arrivals per hour were identical. Figure 1 demonstrates that the results from the CCU applied example. This shows that method3 and NSPP via thinning are qualitatively the same. NSPP Thinning smooths the mean number of arrivals per hour to a small extent. Variation in the number of arrivals per hour is similar with identical standard deviations."
+  },
+  {
+    "objectID": "index.html#conclusions",
+    "href": "index.html#conclusions",
+    "title": "A comparison of method3 and NSPP via thinning",
+    "section": "Conclusions",
+    "text": "Conclusions\nTo simulate the number of arrivals per hour in a CCU either method3 or NSPP via thinning can be employed. Results are for all practical purposes identical. If variation within an hour is required NSPP via thinning should be employed over method3. NSPP via thinning may also be simpler to implement in simulation software. Although method3 and NSPP via thinning are suitable for simulating the mean number of arrivals, a limitation of this analysis is that we do not consider if the empirical number of arrivals in the CCU truely follows a Poisson process."
+  },
+  {
+    "objectID": "01_theory/01_method3_banks.html",
+    "href": "01_theory/01_method3_banks.html",
+    "title": "Project Method 3",
+    "section": "",
+    "text": "This notebook generates the hourly number of arrivals using a Poisson distribution for each hour. We do using the example from Banks et al."
+  },
+  {
+    "objectID": "01_theory/01_method3_banks.html#example-from-banks-et-al.",
+    "href": "01_theory/01_method3_banks.html#example-from-banks-et-al.",
+    "title": "Project Method 3",
+    "section": "Example from Banks et al.",
+    "text": "Example from Banks et al.\nWe will illustrate the use of NSPPThinning using an example from Banks et al. \nThe table below breaks an arrival process down into 60 minutes intervals.\n\n\n\n\n\n\n\n\nt(min)\nMean time between arrivals (min)\nArrival Rate \\(\\lambda(t)\\) (arrivals/min)\n\n\n\n\n0\n15\n1/15\n\n\n60\n12\n1/12\n\n\n120\n7\n1/7\n\n\n180\n5\n1/5\n\n\n240\n8\n1/8\n\n\n300\n10\n1/10\n\n\n360\n15\n1/15\n\n\n420\n20\n1/20\n\n\n480\n20\n1/20\n\n\n\n\nInterpretation: In the table above the fastest arrival rate is 1/5 customers per minute or 5 minutes between customer arrivals."
+  },
+  {
+    "objectID": "01_theory/01_method3_banks.html#imports",
+    "href": "01_theory/01_method3_banks.html#imports",
+    "title": "Project Method 3",
+    "section": "Imports",
+    "text": "Imports\n\nimport pandas as pd\nimport numpy as np\nimport matplotlib.pyplot as plt\n\nfrom sim_tools.datasets import load_banks_et_al_nspp\nimport sim_tools\nsim_tools.__version__\n\n/tmp/ipykernel_1134562/3514245499.py:1: DeprecationWarning: \nPyarrow will become a required dependency of pandas in the next major release of pandas (pandas 3.0),\n(to allow more performant data types, such as the Arrow string type, and better interoperability with other libraries)\nbut was not found to be installed on your system.\nIf this would cause problems for you,\nplease provide us feedback at https://github.com/pandas-dev/pandas/issues/54466\n        \n  import pandas as pd\n\n\n'0.5.0'"
+  },
+  {
+    "objectID": "01_theory/01_method3_banks.html#arrival-profile-data",
+    "href": "01_theory/01_method3_banks.html#arrival-profile-data",
+    "title": "Project Method 3",
+    "section": "Arrival Profile Data",
+    "text": "Arrival Profile Data\nWe will use the arrival_rate column as the parameter of the individual Poisson distributions.\n\nbanks_arrival_profile = load_banks_et_al_nspp()\nbanks_arrival_profile\n\n\n\n\n\n\n\n\nt\nmean_iat\narrival_rate\n\n\n\n\n0\n0\n15\n0.066667\n\n\n1\n60\n12\n0.083333\n\n\n2\n120\n7\n0.142857\n\n\n3\n180\n5\n0.200000\n\n\n4\n240\n8\n0.125000\n\n\n5\n300\n10\n0.100000\n\n\n6\n360\n15\n0.066667\n\n\n7\n420\n20\n0.050000\n\n\n8\n480\n20\n0.050000"
+  },
+  {
+    "objectID": "01_theory/01_method3_banks.html#sampler",
+    "href": "01_theory/01_method3_banks.html#sampler",
+    "title": "Project Method 3",
+    "section": "Sampler",
+    "text": "Sampler\nA class has been created to simplify the sampling.\n\nclass HourPoissonSampler:\n    def __init__(self, arrival_profile, random_seed=None):\n        self.arrival_profile = arrival_profile\n        self.rng = np.random.default_rng(random_seed)\n\n    def sample(self, hour, size=None):\n        '''Sample the number of arrivals in a given hour\n\n        Parameters:\n        ---------\n        hour: int\n            Zero indexed hour\n\n        size: int, optional (default=None)\n            Number of samples to return. None returns 1.\n\n        Returns:\n        -------\n        np.array or float\n        \n        '''\n        rate = self.arrival_profile.iloc[hour]['arrival_rate']\n        return self.rng.poisson(rate, size=size)"
+  },
+  {
+    "objectID": "01_theory/01_method3_banks.html#using-the-sampler",
+    "href": "01_theory/01_method3_banks.html#using-the-sampler",
+    "title": "Project Method 3",
+    "section": "Using the sampler",
+    "text": "Using the sampler\n\nsamples_per_hour = 100_000\n\n# create the sampler and set seed\nph_sampler = HourPoissonSampler(banks_arrival_profile, random_seed=42)\n\n# returns numpy array for hour 1\nhr_sample = ph_sampler.sample(0, size=samples_per_hour)\nhr_sample.shape\n\n(100000,)\n\n\n\n# first 10 results\nhr_sample[:10]\n\narray([0, 0, 0, 0, 0, 1, 0, 0, 0, 0])\n\n\n\n# mean arrival rate as expected - its our rate parameter og 0.067 per hr.\nhr_sample.mean()\n\n0.06723"
+  },
+  {
+    "objectID": "01_theory/01_method3_banks.html#sampling-experiment",
+    "href": "01_theory/01_method3_banks.html#sampling-experiment",
+    "title": "Project Method 3",
+    "section": "Sampling experiment",
+    "text": "Sampling experiment\n\nph_sampler = HourPoissonSampler(banks_arrival_profile, random_seed=42)\n\nsamples = []\nfor hr in range(len(banks_arrival_profile)):\n    hr_sample = ph_sampler.sample(hr, size=samples_per_hour)\n    samples.append(hr_sample)"
+  },
+  {
+    "objectID": "01_theory/01_method3_banks.html#plot-results",
+    "href": "01_theory/01_method3_banks.html#plot-results",
+    "title": "Project Method 3",
+    "section": "Plot results",
+    "text": "Plot results\nThe hour means are our theorectical arrival rates per hour - as expected.\n\n# get hour means\nhour_means = np.asarray(samples).mean(axis=1)\n\n# visualise\nfig = plt.figure(figsize=(12,3))\nax = fig.add_subplot()\n\n# plot in this case returns a 2D line plot object\n_ = ax.plot(hour_means)\n\n\n\n\n\npd.DataFrame(hour_means).to_csv(\"./banks_method3.csv\", index=False)"
+  }
+]
