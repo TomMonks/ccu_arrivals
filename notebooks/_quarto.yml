@@ -1,0 +1,40 @@
+project:
+  type: website
+  render:
+    - index.qmd
+    - abstract.qmd
+    - 01_theory/01_method3_banks.ipynb
+    - 01_theory/01_thinning_banks.ipynb
+    - 02_applied/01_method3_ccu.ipynb
+    - 02_applied/01_thinning_ccu.ipynb
+
+# theme:
+#   light: flatly
+#   dark: darkly 
+    
+website:
+  title: "CCU Arrivals"
+  repo-url: https://github.com/TomMonks/ccu_arrivals
+  repo-actions: [edit, issue]
+  sidebar:
+    style: "docked"
+    search: true
+    contents:
+      - section: "Introduction"
+        contents:
+          - abstract.qmd
+      - section: "Theorectical example"
+        contents:
+          - 01_theory/01_method3_banks.ipynb
+          - 01_theory/01_thinning_banks.ipynb
+      - section: "CCU example"
+        contents:
+          - 02_applied/01_method3_ccu.ipynb
+          - 02_applied/01_thinning_ccu.ipynb
+      - section: "STRESS reporting"
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
